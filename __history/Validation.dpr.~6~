@@ -1,0 +1,58 @@
+library Validation;
+
+{ Important note about DLL memory management: ShareMem must be the
+  first unit in your library's USES clause AND your project's (select
+  Project-View Source) USES clause if your DLL exports any procedures or
+  functions that pass strings as parameters or function results. This
+  applies to all strings passed to and from your DLL--even those that
+  are nested in records and classes. ShareMem is the interface unit to
+  the BORLNDMM.DLL shared memory manager, which must be deployed along
+  with your DLL. To avoid using BORLNDMM.DLL, pass string information
+  using PChar or ShortString parameters.
+
+  Important note about VCL usage: when this DLL will be implicitly
+  loaded and this DLL uses TWicImage / TImageCollection created in
+  any unit initialization section, then Vcl.WicImageInit must be
+  included into your library's USES clause. }
+
+uses
+  System.SysUtils,
+  System.Classes,
+  RegularExpressions;
+
+  function IsValidNumber(const phoneNumber: string): Boolean;
+  var
+  regex: TRegEx;
+  begin
+    //checks if the phone number consists of 10 digits and starts with 0
+    regex := TRegEx.Create('^[0]\d{9}$');
+    Result := regex.IsMatch(phoneNumber);
+  end;
+
+  function IsValidPassword(const password: string): Boolean;
+  var
+    regex: TRegEx;
+  begin
+    //check if the password is 8 characters long and contains at least one special character
+    regex := TRegEx.Create('^(?=.*[#^@$!%*?&])[A-Za-z\d@$#^!%*?&]{8,}$');
+    Result := regex.IsMatch(password);
+  end;
+
+  function IsValidEmail(const email: string): Boolean;
+  var
+    regex: TRegEx;
+  begin
+    //check if the email address is in a valid format
+    regex := TRegEx.Create('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+    Result := regex.IsMatch(email);
+  end;
+
+
+exports
+  IsValidNumber, IsValidPassword, IsValidEmail;
+
+
+{$R *.res}
+
+begin
+end.
